@@ -1,19 +1,14 @@
-<dom-module id="clientes-page">
+
+<dom-module id="fornecedores-page">
     <template>
         <style>
             :host {
                 display: block;
             }
-            paper-fab { 
-                position: fixed;
-                right: 30px;
-                bottom: 30px; 
-                background-color: #1ABB9C;
-            }
         </style>
         <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-            <h2>Cadatro de cliente</h2>
+            <h2>Cadatro de fornecedor</h2>
             <paper-dialog-scrollable>
                 <div class="row">
                     <paper-dropdown-menu id="natureza_juridica" label="Natureza Jurídica" class="col-md-4">
@@ -91,7 +86,7 @@
     </template>
     <script>
         Polymer({
-            is: 'clientes-page',
+            is: 'fornecedores-page',
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
