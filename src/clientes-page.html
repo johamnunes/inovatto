@@ -1,0 +1,129 @@
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
+
+<dom-module id="clientes-page">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-fab { 
+                position: fixed;
+                right: 30px;
+                bottom: 30px; 
+                background-color: #1ABB9C;
+            }
+        </style>
+        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+        <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+            <h2>Cadatro de cliente</h2>
+            <paper-dialog-scrollable>
+                <div class="row">
+                    <paper-dropdown-menu id="natureza_juridica" label="Natureza Jurídica" class="col-md-4">
+                        <paper-listbox class="dropdown-content">
+                            <paper-item value="0">Pessoa Física</paper-item>
+                            <paper-item value="1">Pessoa Jurídica</paper-item>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
+                <div class="row">
+                    <paper-input id="nome_razao_social" label="Nome / Razão Social" class="col-md-8"></paper-input>   
+                    <paper-input id="fantasia" label="Fantasia" class="col-md-4"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input id="telefone" label="Telefone" class="col-md-4"></paper-input> 
+                    <paper-input id="celular" label="Celular" class="col-md-4"></paper-input> 
+                    <paper-input id="e-mail" label="E-mail" class="col-md-4"></paper-input>  
+                </div>
+                <paper-menu>
+                    <paper-submenu id="menu">
+                        <paper-item class="menu-trigger" on-tap="menuTap" style="padding: 0; margin: 0; cursor: pointer;">
+                            <iron-icon icon="arrow-drop-down"></iron-icon>
+                            Documentos
+                        </paper-item>
+                        <paper-menu class="menu-content">
+                            <div class="row">
+                                <paper-input id="CPF_cnpj" label="Cpf / CNPJ" class="col-md-4"></paper-input>
+                                <paper-input id="identidade_rg" label="Identidade (RG)" class="col-md-4"></paper-input>
+                                <paper-input id="insc_estadual" label="Inscrição Estadual" class="col-md-4"></paper-input>    
+                            </div>
+                            <div class="row">
+                                <paper-input id="data_nasc_fund" label="Data de Nasc. / Fundação" class="col-md-4"></paper-input>
+                                <paper-input id="adicional" label="Adicional" class="col-md-8"></paper-input>
+                            </div>
+                        </paper-menu>
+                    </paper-submenu>
+                    <paper-submenu id="menu">
+                         <paper-item class="menu-trigger" on-tap="menuTap" style="padding: 0; margin: 0; cursor: pointer;">
+                            <iron-icon icon="arrow-drop-down"></iron-icon>
+                            Endereço
+                        </paper-item>
+                        <paper-menu class="menu-content">
+                            <div class="row">
+                                <paper-input id="cep" label="CEP" class="col-md-2"></paper-input> 
+                                <paper-input id="logradouro" label="Logradouro" class="col-md-8"></paper-input> 
+                                <paper-input id="numero" label="Número" class="col-md-2"></paper-input>  
+                            </div>
+                            <div class="row">
+                                <paper-input id="complemento" label="Complemento" class="col-md-4"></paper-input> 
+                                <paper-input id="bairro"label="Bairro" class="col-md-4"></paper-input> 
+                                <paper-input id="cidade_uf"label="Cidade / UF" class="col-md-4"></paper-input>  
+                            </div>
+                        </paper-menu>
+                    </paper-submenu>
+                    <paper-submenu id="menu">
+                         <paper-item class="menu-trigger" on-tap="menuTap" style="padding: 0; margin: 0; cursor: pointer;">
+                            <iron-icon icon="arrow-drop-down"></iron-icon>
+                            Dados para contato
+                        </paper-item>
+                        <paper-menu class="menu-content">
+                            <div class="row">
+                                <paper-input id="nome" label="Nome" class="col-md-4"></paper-input> 
+                                <paper-input id="e-mail_contato" label="E-mail" class="col-md-4"></paper-input> 
+                                <paper-input id="telefone_contato "label="Telefone" class="col-md-4"></paper-input>
+                            </div>
+                        </paper-menu>
+                    </paper-submenu>
+                </paper-menu>
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Fechar</paper-button>
+                <paper-button>Salvar</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'clientes-page',
+            novoCadastro: function() {
+                this.$.cadastro.open();
+                this.setDialog(true);
+            },
+            setDialog: function (open) {
+                if (open) {
+                    var textnode = document.querySelector("body");
+                    textnode.appendChild(this.$.cadastro);
+                } else {
+                    var textnode = document.querySelector("my-topnavigation");
+                    textnode.appendChild(this.$.cadastro);
+                }
+            },
+            menuTap: function() {
+                if(this.$.cadastro.opened) {
+                    this.async(function () {
+                        this.$.cadastro.notifyResize();
+                    });
+                }
+            }
+        });
+    </script>
+</dom-module>

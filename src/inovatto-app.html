@@ -20,14 +20,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-submenu.html">
 <link rel="import" href="my-icons.html">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<dom-module id="my-app">
+<dom-module id="inovatto-app">
   <template>
     <style>
       :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
+        --app-primary-color: #2A3F54;
+        --app-secondary-color: white;
 
         display: block;
       }
@@ -36,6 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #fff;
         background-color: var(--app-primary-color);
       }
+
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
@@ -44,16 +48,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin: 0 20px;
       }
 
-      .drawer-list a {
+      paper-item {
         display: block;
         padding: 0 16px;
         text-decoration: none;
         color: var(--app-secondary-color);
         line-height: 40px;
+        cursor: pointer;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 26px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+        font-weight: normal;
+      }
+
+      paper-menu { 
+        background-color: transparent;
+      }
+
+      paper-submenu {
+        background-color: transparent;
       }
 
       .drawer-list a.iron-selected {
-        color: black;
+        color: white;
         font-weight: bold;
       }
     </style>
@@ -65,14 +87,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <app-drawer-layout fullbleed>
+    <app-drawer-layout fullbleed> 
       <!-- Drawer content -->
       <app-drawer id="drawer">
-        <app-toolbar>Menu</app-toolbar>
+        <app-toolbar>Inovatto</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
+          <paper-menu>
+            <paper-submenu>
+              <paper-item class="menu-trigger">Integração</paper-item>
+              <paper-menu class="menu-content">
+                <a name="clientes" href="/clientes">Clientes</a>
+                <a name="fornecedores" href="/fornecedores">Fornecedores</a>
+                <a name="grupos" href="/grupos">Grupos</a>
+              </paper-menu>
+            </paper-submenu>
+            <paper-submenu>
+              <paper-item class="menu-trigger">Estoque</paper-item>
+              <paper-menu class="menu-content">
+                <a name="produtos" href="/produtos">Produtos</a>
+                <a name="fornecedores" href="/fornecedores">Fornecedores</a>
+                <a name="grupos" href="/grupos">Grupos</a>
+              </paper-menu>
+            </paper-submenu>
+            <paper-submenu>
+              <paper-item class="menu-trigger">Financeiro</paper-item>
+              <paper-menu class="menu-content">
+                <paper-item>Disabled 1</paper-item>
+                <paper-item>Disabled 2</paper-item>
+              </paper-menu>
+            </paper-submenu>
+            <paper-submenu>
+              <paper-item class="menu-trigger">Vendas/Faturamento</paper-item>
+              <paper-menu class="menu-content">
+                <paper-item>Disabled 1</paper-item>
+                <paper-item>Disabled 2</paper-item>
+              </paper-menu>
+            </paper-submenu>
+            <paper-submenu>
+              <paper-item class="menu-trigger">Compras</paper-item>
+              <paper-menu class="menu-content">
+                <paper-item>Disabled 1</paper-item>
+                <paper-item>Disabled 2</paper-item>
+              </paper-menu>
+            </paper-submenu>
+          </paper-menu>
+          
+          
         </iron-selector>
       </app-drawer>
 
@@ -89,12 +149,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-pages
             selected="[[page]]"
             attr-for-selected="name"
-            fallback-selection="view404"
+            fallback-selection="error"
             role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
+          <clientes-page name="clientes"></clientes-page>
+          <error-page name="error"></error-page>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -102,7 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     Polymer({
-      is: 'my-app',
+      is: 'inovatto-app',
 
       properties: {
         page: {
@@ -117,7 +175,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
+        this.page = page || 'clientes';
 
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
@@ -126,12 +184,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _pageChanged: function(page) {
         // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        var resolvedPageUrl = this.resolveUrl(page + '-page.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
       },
 
       _showPage404: function() {
-        this.page = 'view404';
+        this.page = 'error';
       },
     });
   </script>
