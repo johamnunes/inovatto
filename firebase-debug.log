@@ -1,0 +1,42 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] CLI Version:  3.2.3
+[debug] Platform:     darwin
+[debug] Node Version: v6.9.5
+[debug] Time:         Mon Feb 20 2017 13:01:10 GMT-0300 (BRT)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/johamnunes/websites/inovatto
+[info] Public Directory: /
+[info] 
+[info] Server listening at: http://localhost:5000
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] CLI Version:  3.2.3
+[debug] Platform:     darwin
+[debug] Node Version: v6.9.5
+[debug] Time:         Tue Feb 21 2017 09:54:30 GMT-0300 (BRT)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/johamnunes/websites/inovatto
+[info] Public Directory: /
+[info] 
+[info] Server listening at: http://localhost:5000
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] CLI Version:  3.2.3
+[debug] Platform:     darwin
+[debug] Node Version: v6.9.5
+[debug] Time:         Tue Feb 21 2017 10:01:13 GMT-0300 (BRT)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/johamnunes/websites/inovatto
+[info] Public Directory: /
+[info] 
+[info] Server listening at: http://localhost:5000
