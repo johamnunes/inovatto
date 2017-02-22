@@ -1,0 +1,82 @@
+<dom-module id="conta-receber-page">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-fab { 
+                position: fixed;
+                right: 30px;
+                bottom: 30px; 
+                background-color: #1ABB9C;
+            }
+            paper-checkbox {
+                vertical-align: bottom;
+            }
+        </style>
+        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+            <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+                <h2>Cadastro de Conta a Receber</h2>
+                <paper-dialog-scrollable>
+                    <div class="row">
+                        <paper-input id="fornecedor" label="Fornecedor" class="col-md-12"></paper-input>    
+                    </div>
+                    <div class="row">
+                        <paper-input id="banco_caixa" label="Banco / Caixa" class="col-md-3"></paper-input>   
+                        <paper-input id="meio_pgto" label="Meio Pagamento" class="col-md-3"></paper-input>  
+                        <paper-input id="origem_titulo" label="Origem Título" class="col-md-3"></paper-input>   
+                        <paper-input id="tipo_titulo" label="Meio Pagamento" class="col-md-3"></paper-input>  
+                    </div>
+                    <div class="row">
+                        <paper-input id="status" label="Status" class="col-md-3"></paper-input>   
+                        <paper-input id="numero" label="Número" class="col-md-3"></paper-input>  
+                        <paper-input id="parcela" label="Parcela" class="col-md-3"></paper-input>   
+                        <paper-input id="quantidade_parcela" label="Quantidade parcela" class="col-md-3"></paper-input>  
+                    </div>
+                    <div class="row">
+                        <paper-input id="data_lancamento" label="Data Lançamento" class="col-md-3"></paper-input>   
+                        <paper-input id="data_vencimento" label="Data Vencimento" class="col-md-3"></paper-input>  
+                    </div>
+                    <div class="row">
+                        <paper-input id="valor_bruto" label="Valor_Bruto" class="col-md-3"></paper-input>   
+                        <paper-input id="valor_acrescimo" label="Valor Acréscimo" class="col-md-3"></paper-input>  
+                        <paper-input id="valor_desconto" label="Valor Desconto" class="col-md-3"></paper-input>   
+                        <paper-input id="valor_total" label="Valor Total" class="col-md-3"></paper-input>  
+                    </div>       
+                    <div class="row">
+                        <paper-input id="saldo_pagar" label="Saldo Pagar" class="col-md-4"></paper-input>   
+                        <paper-input id="historico" label="Histórico" class="col-md-8"></paper-input>  
+                    </div>    
+                </paper-dialog-scrollable>                       
+                <div class="buttons">
+                    <paper-button dialog-dismiss>Fechar</paper-button>
+                    <paper-button>Salvar</paper-button>
+                </div>
+            </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'conta-receber-page',
+            novoCadastro: function() {
+                this.$.cadastro.open();
+                this.setDialog(true);
+            },
+            setDialog: function (open) {
+                if (open) {
+                    var textnode = document.querySelector("body");
+                    textnode.appendChild(this.$.cadastro);
+                } else {
+                    var textnode = document.querySelector("my-topnavigation");
+                    textnode.appendChild(this.$.cadastro);
+                }
+            },
+            menuTap: function() {
+                if(this.$.cadastro.opened) {
+                    this.async(function () {
+                        this.$.cadastro.notifyResize();
+                    });
+                }
+            }
+        });
+    </script>
+</dom-module>
