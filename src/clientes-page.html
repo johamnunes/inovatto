@@ -1,6 +1,3 @@
-
-<link rel="import" href="../bower_components/iron-list/iron-list.html">
-
 <dom-module id="clientes-page">
     <template>
         <style>
@@ -13,16 +10,54 @@
                 bottom: 30px; 
                 background-color: #1ABB9C;
             }
+            .card {
+                display: flex;
+                justify-content: center;
+                margin: 10px;
+            }
         </style>
-        <template is="dom-repeat" items="{{employees}}">
-            <div># <span>{{index}}</span></div>
-            <div>First name: <span>{{item.apelido}}</span></div>
-            <div>Last name: <span>{{item.telefone}}</span></div>
-        </template>
-        <iron-list id="clientesList" itens="{{clientes}}" as="cliente">
-            <p>Telefone: [[cliente.telefone]]</p>
-        </iron-list>
-        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+        <div class="card">
+            <paper-card heading="Clientes" elevation="1" animated-shadow="false">
+                <div class="card-content">
+                    <paper-datatable data={{clientes}}>
+                        <paper-datatable-column header="Nome / Razão Social" property="nomeRazaoSocial" sortable>
+                            <template>
+                                <p>{{item.nomeRazaoSocial}}</p>
+                            </template>
+                        </paper-datatable-column>
+                        <paper-datatable-column header="CPF / CNPJ" property="cpfCnpj" sortable>
+                            <template>
+                                <p>{{item.cpfCnpj}}</p>
+                            </template>
+                        </paper-datatable-column>
+                        <paper-datatable-column header="Telefone" property="telefone" sortable>
+                            <template>
+                                <p>{{item.telefone}}</p>
+                            </template>
+                        </paper-datatable-column>
+                        <paper-datatable-column header="Ações" property="nomeRazaoSocial">
+                            <template>
+                                <paper-icon-button id="edit" icon="create"></paper-icon-button>
+                                <paper-icon-button id="delete" icon="delete"></paper-icon-button>
+                                <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
+                                <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
+                            </template>
+                        </paper-datatable-column>
+                    </paper-datatable>
+                </div>
+                <div class="card-actions">
+                    <paper-icon-button icon="file-download"></paper-icon-button>
+                    <paper-icon-button icon="print"></paper-icon-button>
+                    
+                </div>
+            </paper-card>
+        </div>
+        
+        
+        
+
+        <paper-fab id="addCliente" icon="add" on-tap="novoCadastro"></paper-fab>
+        <paper-tooltip for="addCliente" position="left">Adicionar cliente</paper-tooltip>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro de cliente</h2>
             <paper-dialog-scrollable>
@@ -119,11 +154,19 @@
                 }
             },
             created: function() {
-                var clientes;
-                firebase.database().ref().child('clientes').on('child_added', function(childSnap) {
-                    clientes = childSnap.val();
+                var itens = [];
+                firebase.database().ref().child('clientes').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            nomeRazaoSocial: childSnap.child('nomeRazaoSocial').val(),
+                            cpfCnpj: childSnap.child('cpfCnpj').val(),
+                            telefone: childSnap.child('telefone').val()
+                            });
+                    });
+                    console.log(itens);
+                    this.clientes = itens;
+                    itens = [];
                 });
-                    console.log(clientes);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();
@@ -192,6 +235,7 @@
                     cliente.telefoneContato = this.$.telefoneContato.value;
                     console.log(cliente);
                     firebase.database().ref('clientes').push(cliente);
+                    this.$.cadastro.close();
                 }
             }
         });
