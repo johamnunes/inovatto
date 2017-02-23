@@ -7,10 +7,10 @@
     <title>Inovatto</title>
     <meta name="description" content="inovatto sistemas">
 
-    <link rel="icon" href="/images/favicon.ico">
+    <link rel="icon" href="images/favicon.ico">
 
     <!-- See https://goo.gl/OOhYW5 -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
 
     <!-- See https://goo.gl/qRE0vM -->
     <meta name="theme-color" content="#3f51b5">
@@ -25,14 +25,14 @@
     <meta name="apple-mobile-web-app-title" content="Inovatto">
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="/images/manifest/icon-48x48.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/images/manifest/icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="96x96" href="/images/manifest/icon-96x96.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/images/manifest/icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="/images/manifest/icon-192x192.png">
+    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
 
     <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="/images/manifest/icon-144x144.png">
+    <meta name="msapplication-TileImage" content="../images/manifest/icon-144x144.png">
     <meta name="msapplication-TileColor" content="#3f51b5">
     <meta name="msapplication-tap-highlight" content="no">
 
@@ -67,7 +67,7 @@
         if (!webComponentsSupported) {
           var script = document.createElement('script');
           script.async = true;
-          script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+          script.src = 'bower_components/webcomponentsjs/webcomponents-lite.min.js';
           script.onload = onload;
           document.head.appendChild(script);
         } else {
@@ -78,12 +78,12 @@
       // Load pre-caching Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js');
+          navigator.serviceWorker.register('service-worker.js');
         });
       }
     </script>
 
-    <link rel="import" href="/src/inovatto-app.html">
+    <link rel="import" href="src/login-page.html">
 
     <style>
       body {
@@ -96,22 +96,6 @@
     </style>
   </head>
   <body>
-    <script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>
-    <script>
-    var config = {
-        apiKey: "AIzaSyDlBvtrT_D5gIHMgXNA_CrYXQFpHBmOvUU",
-        authDomain: "inovatto-f1d3c.firebaseapp.com",
-        databaseURL: "https://inovatto-f1d3c.firebaseio.com",
-        storageBucket: "inovatto-f1d3c.appspot.com",
-        messagingSenderId: "616984345287"
-    };
-    firebase.initializeApp(config);
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user == null) {
-        window.location = '../app.html';
-      }
-    });
-    </script>
-    <inovatto-app></inovatto-app>
+    <login-page></login-page>
   </body>
 </html>

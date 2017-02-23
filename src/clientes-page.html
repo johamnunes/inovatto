@@ -1,3 +1,6 @@
+
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+
 <dom-module id="clientes-page">
     <template>
         <style>
@@ -11,26 +14,38 @@
                 background-color: #1ABB9C;
             }
         </style>
+        <template is="dom-repeat" items="{{employees}}">
+            <div># <span>{{index}}</span></div>
+            <div>First name: <span>{{item.apelido}}</span></div>
+            <div>Last name: <span>{{item.telefone}}</span></div>
+        </template>
+        <iron-list id="clientesList" itens="{{clientes}}" as="cliente">
+            <p>Telefone: [[cliente.telefone]]</p>
+        </iron-list>
         <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro de cliente</h2>
             <paper-dialog-scrollable>
                 <div class="row">
-                    <paper-dropdown-menu id="natureza_juridica" label="Natureza Jurídica" class="col-md-4">
-                        <paper-listbox class="dropdown-content">
+                    <paper-dropdown-menu id="naturezaJuridica" label="Natureza Jurídica" class="col-md-4" >
+                        <paper-listbox class="dropdown-content" selected="{{selected}}">
                             <paper-item value="0">Pessoa Física</paper-item>
                             <paper-item value="1">Pessoa Jurídica</paper-item>
                         </paper-listbox>
                     </paper-dropdown-menu>
                 </div>
                 <div class="row">
-                    <paper-input id="nome_razao_social" label="Nome / Razão Social" class="col-md-8"></paper-input>   
+                    <paper-input id="nomeRazaoSocial" label="Nome / Razão Social" class="col-md-8"></paper-input>   
                     <paper-input id="fantasia" label="Fantasia" class="col-md-4"></paper-input>
                 </div>
                 <div class="row">
-                    <paper-input id="telefone" label="Telefone" class="col-md-4"></paper-input> 
-                    <paper-input id="celular" label="Celular" class="col-md-4"></paper-input> 
-                    <paper-input id="e-mail" label="E-mail" class="col-md-4"></paper-input>  
+                    <gold-phone-input
+                        phone-number-pattern="XX-XXXX-XXXX" id="telefone" label="Telefone" class="col-md-4">
+                    </gold-phone-input>
+                    <gold-phone-input
+                        phone-number-pattern="XX-XXXXX-XXXX" id="celular" label="Celular" class="col-md-4">
+                    </gold-phone-input>
+                    <paper-input id="email" label="E-mail" class="col-md-4"></paper-input>  
                 </div>
                 <paper-menu>
                     <paper-submenu id="menu">
@@ -40,12 +55,12 @@
                         </paper-item>
                         <paper-menu class="menu-content">
                             <div class="row">
-                                <paper-input id="CPF_cnpj" label="Cpf / CNPJ" class="col-md-4"></paper-input>
-                                <paper-input id="identidade_rg" label="Identidade (RG)" class="col-md-4"></paper-input>
-                                <paper-input id="insc_estadual" label="Inscrição Estadual" class="col-md-4"></paper-input>    
+                                <paper-input id="CPFCnpj" label="Cpf / CNPJ" class="col-md-4"></paper-input>
+                                <paper-input id="identidadeRg" label="Identidade (RG)" class="col-md-4"></paper-input>
+                                <paper-input id="inscEstadual" label="Inscrição Estadual" class="col-md-4"></paper-input>    
                             </div>
                             <div class="row">
-                                <paper-input id="data_nasc_fund" label="Data de Nasc. / Fundação" class="col-md-4"></paper-input>
+                                <paper-input id="dataNascFund" label="Data de Nasc. / Fundação" class="col-md-4"></paper-input>
                                 <paper-input id="adicional" label="Adicional" class="col-md-8"></paper-input>
                             </div>
                         </paper-menu>
@@ -64,7 +79,7 @@
                             <div class="row">
                                 <paper-input id="complemento" label="Complemento" class="col-md-4"></paper-input> 
                                 <paper-input id="bairro"label="Bairro" class="col-md-4"></paper-input> 
-                                <paper-input id="cidade_uf"label="Cidade / UF" class="col-md-4"></paper-input>  
+                                <paper-input id="cidadeUf"label="Cidade / UF" class="col-md-4"></paper-input>  
                             </div>
                         </paper-menu>
                     </paper-submenu>
@@ -75,23 +90,41 @@
                         </paper-item>
                         <paper-menu class="menu-content">
                             <div class="row">
-                                <paper-input id="nome" label="Nome" class="col-md-4"></paper-input> 
-                                <paper-input id="e-mail_contato" label="E-mail" class="col-md-4"></paper-input> 
-                                <paper-input id="telefone_contato "label="Telefone" class="col-md-4"></paper-input>
+                                <paper-input id="nomeContato" label="Nome" class="col-md-4"></paper-input> 
+                                <paper-input id="emailContato" label="E-mail" class="col-md-4"></paper-input>
+                                <gold-phone-input
+                                    phone-number-pattern="XX-XXXX-XXXX" id="telefoneContato" label="Telefone" class="col-md-4">
+                                </gold-phone-input> 
                             </div>
                         </paper-menu>
                     </paper-submenu>
                 </paper-menu>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher o Nome ou a Razão Social."></paper-toast>
             </div>
         </paper-dialog>
+        
     </template>
     <script>
         Polymer({
             is: 'clientes-page',
+            properties: {
+                selected: {
+                    type: String,
+                    observer: "_selected",
+                    notify: true
+                }
+            },
+            created: function() {
+                var clientes;
+                firebase.database().ref().child('clientes').on('child_added', function(childSnap) {
+                    clientes = childSnap.val();
+                });
+                    console.log(clientes);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -110,6 +143,55 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            _selected: function(selected) {
+                switch(selected) {
+                    case 0:
+                        this.$.nomeRazaoSocial.label = "Nome";
+                        this.$.fantasia.label = "Apelido";
+                        this.$.CPFCnpj.label = "CPF";
+                        this.$.dataNascFund.label = "Data de Nascimento";
+                        this.$.inscEstadual.disabled = true;
+                        this.$.identidadeRg.disabled = false;
+                        break;
+                    case 1:
+                        this.$.nomeRazaoSocial.label = "Razão Social";
+                        this.$.fantasia.label = "Nome Fantasia";
+                        this.$.CPFCnpj.label = "CNPJ";
+                        this.$.dataNascFund.label = "Data de Fundação";
+                        this.$.inscEstadual.disabled = false;
+                        this.$.identidadeRg.disabled = true;
+                        break;
+                }
+            },
+            salvar: function() {
+                var cliente = new Object();
+                if(this.$.nomeRazaoSocial.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    cliente.nomeRazaoSocial = this.$.nomeRazaoSocial.value;
+                    cliente.cpfCnpj = this.$.CPFCnpj.value;
+                    cliente.rg = this.$.identidadeRg.value;
+                    cliente.fantasia = this.$.fantasia.value;
+                    cliente.inscEstadual = this.$.inscEstadual.value;
+                    cliente.dataNascFund = this.$.dataNascFund.value;
+                    cliente.naturezaJuridica = this.$.naturezaJuridica.value;
+                    cliente.telefone = this.$.telefone.value;
+                    cliente.celular = this.$.celular.value;
+                    cliente.email = this.$.email.value;
+                    cliente.adicional = this.$.adicional.value;
+                    cliente.cep = this.$.cep.value;
+                    cliente.logradouro = this.$.logradouro.value;
+                    cliente.numero = this.$.numero.value;
+                    cliente.complemento = this.$.complemento.value;
+                    cliente.bairro = this.$.bairro.value;
+                    cliente.cidade = this.$.cidadeUf.value;
+                    cliente.nomeContato = this.$.nomeContato.value;
+                    cliente.emailContato = this.$.emailContato.value;
+                    cliente.telefoneContato = this.$.telefoneContato.value;
+                    console.log(cliente);
+                    firebase.database().ref('clientes').push(cliente);
                 }
             }
         });
