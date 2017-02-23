@@ -24,15 +24,22 @@
                 </div>
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
             </div>
         </paper-dialog>
-    </template>
-    
+    </template>   
     <script>
         Polymer({
             is: 'grupos-produtos-page',
+            created: function() {
+                var gruposProdutos;
+                firebase.database().ref().child('gruposProdutos').on('child_added', function(childSnap) {
+                    gruposProdutos = childSnap.val();
+                });
+                    console.log(gruposProdutos);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -51,6 +58,16 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+             salvar: function() {
+                var grupoProduto = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    grupoProduto.descricao = this.$.descricao.value;
+                    console.log(grupoProduto);
+                    firebase.database().ref('gruposProdutos').push(grupoProduto);
                 }
             }
         });

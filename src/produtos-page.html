@@ -1,4 +1,3 @@
-
 <dom-module id="produtos-page">
     <template>
         <style>
@@ -21,37 +20,45 @@
             <paper-dialog-scrollable>
                 <div class="row">
                     <paper-input id="descricao" label="Descrição" class="col-md-8"></paper-input> 
-                    <paper-input id="codigo_barra" label="Código de Barra" class="col-md-4"></paper-input> 
+                    <paper-input id="codigoBarra" label="Código de Barra" class="col-md-4"></paper-input> 
                 </div>
                 <div class="row">      
-                     <paper-input id="grupo_produto" label="Grupo Produto" class="col-md-4"></paper-input> 
-                     <paper-input id="marca_produto" label="Marca Produto" class="col-md-4"></paper-input> 
-                     <paper-input id="codigo_extra" label="Código Extra" class="col-md-4"></paper-input>     
+                     <paper-input id="grupoProduto" label="Grupo Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="marcaProduto" label="Marca Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="codigoExtra" label="Código Extra" class="col-md-4"></paper-input>     
                 </div>           
                 <div class="row">      
-                     <paper-input id="compra_unidade_produto" label="Compra Unidade Produto" class="col-md-4"></paper-input> 
-                     <paper-input id="embalagem_compra" label="Embalagem Compra" class="col-md-4"></paper-input>   
+                     <paper-input id="compraUnidadeProduto" label="Compra Unidade Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="embalagemCompra" label="Embalagem Compra" class="col-md-4"></paper-input>   
                      <paper-checkbox id="multiplo" class="col-md-2">Múltiplo</paper-checkbox>             
-                     <paper-input id="conversor_entrada" label="Conversor Entrada" class="col-md-2"></paper-input>    
+                     <paper-input id="conversorEntrada" label="Conversor Entrada" class="col-md-2"></paper-input>    
                 </div>  
                 <div class="row">   
-                    <paper-input id="venda_unidade_produto" label="Venda Unidade Produto" class="col-md-6"></paper-input> 
-                     <paper-input id="embalagem_venda" label="Embalagem Venda" class="col-md-6"></paper-input>
+                    <paper-input id="vendaUnidadeProduto" label="Venda Unidade Produto" class="col-md-6"></paper-input> 
+                     <paper-input id="embalagemVenda" label="Embalagem Venda" class="col-md-6"></paper-input>
                 </div>     
                 <div class="row">   
-                     <paper-input id="embalagem_venda" label="Embalagem Venda" class="col-md-8"></paper-input>
-                     <paper-checkbox id="utiliza_grade" class="col-md-4">Utiliza Grade</paper-checkbox>
+                     <paper-checkbox id="utilizaGrade" class="col-md-4">Utiliza Grade</paper-checkbox>
+                     <paper-input id="informacaoAdicional" label="Informação Adicional" class="col-md-8"></paper-input>
                 </div>     
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
             </div>
         </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'produtos-page',
+            created: function() {
+                var produtos;
+                firebase.database().ref().child('produtos').on('child_added', function(childSnap) {
+                    produtos = childSnap.val();
+                });
+                    console.log(produtos);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -70,6 +77,28 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            salvar: function() {
+                var produto = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    produto.descricao = this.$.descricao.value;
+                    produto.codigoBarra = this.$.codigoBarra.value;
+                    produto.grupoProduto = this.$.grupoProduto.value;
+                    produto.marcaProduto = this.$.marcaProduto.value;
+                    produto.codigoExtra = this.$.codigoExtra.value;
+                    produto.compraUnidadeProduto = this.$.compraUnidadeProduto.value;
+                    produto.embalagemCompra = this.$.embalagemCompra.value;
+                    produto.multiplo = this.$.multiplo.checked;
+                    produto.conversorEntrada = this.$.conversorEntrada.value;
+                    produto.vendaUnidadeProduto = this.$.vendaUnidadeProduto.value;
+                    produto.embalagemVenda = this.$.embalagemVenda.value;
+                    produto.utilizaGrade = this.$.utilizaGrade.checked;
+                    produto.informacaoAdicional = this.$.informacaoAdicional.value;
+                    console.log(produto);
+                    firebase.database().ref('produtos').push(produto);
                 }
             }
         });

@@ -1,4 +1,3 @@
-
 <dom-module id="grupos-page">
     <template>
         <style>
@@ -17,7 +16,7 @@
             <h2>Cadastro de grupo</h2>
             <paper-dialog-scrollable>
                 <div class="row">
-                    <paper-dropdown-menu id="tipo_grupo" label="Tipo de Grupo" class="col-md-4">
+                    <paper-dropdown-menu id="tipoGrupo" label="Tipo de Grupo" class="col-md-4">
                         <paper-listbox class="dropdown-content">
                             <paper-item value="0">Cliente</paper-item>
                             <paper-item value="1">Fornecedor</paper-item>
@@ -27,14 +26,22 @@
                 </div>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher o Tipo do Grupo e a Descrição."></paper-toast>
             </div>
         </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'grupos-page',
+            created: function() {
+                var grupos;
+                firebase.database().ref().child('grupos').on('child_added', function(childSnap) {
+                    grupos = childSnap.val();
+                });
+                    console.log(grupos);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -53,6 +60,17 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            salvar: function() {
+                var grupo = new Object();
+                if(this.$.descricao.value == "" || this.$.tipoGrupo.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    grupo.tipoGrupo = this.$.tipoGrupo.value;
+                    grupo.descricao = this.$.descricao.value;
+                    console.log(grupo);
+                    firebase.database().ref('grupos').push(grupo);
                 }
             }
         });
