@@ -1,7 +1,7 @@
 
-<dom-module id="grupos-page">
+<dom-module id="meio-pagamento-page">
     <template>
-        <style>
+         <style>
             :host {
                 display: block;
             }
@@ -11,21 +11,23 @@
                 bottom: 30px; 
                 background-color: #1ABB9C;
             }
+            paper-checkbox {
+                vertical-align: bottom;
+            }
         </style>
-        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+       <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-            <h2>Cadastro de grupo</h2>
+            <h2>Cadastro Meio de Pagamento</h2>
             <paper-dialog-scrollable>
                 <div class="row">
-                    <paper-dropdown-menu id="tipo_grupo" label="Tipo de Grupo" class="col-md-4">
-                        <paper-listbox class="dropdown-content">
-                            <paper-item value="0">Cliente</paper-item>
-                            <paper-item value="1">Fornecedor</paper-item>
-                        </paper-listbox>
-                    </paper-dropdown-menu>
-                    <paper-input id="descricao" label="Descrição" class="col-md-8"></paper-input>
+                    <paper-input id="descricao" label="Descrição" class="col-md-12"></paper-input>    
                 </div>
-            </paper-dialog-scrollable>
+                <div class="row">
+                    <paper-checkbox id="antecipado" class="col-md-4">Antecipado</paper-checkbox>  
+                    <paper-checkbox id="entra_quitado" class="col-md-4">Entra Quitado</paper-checkbox>  
+                    <paper-checkbox id="confirma_cheque" class="col-md-4">Confirma Cheque</paper-checkbox>  
+                </div>
+            </paper-dialog-scrollable>                       
             <div class="buttons">
                 <paper-button dialog-dismiss>Fechar</paper-button>
                 <paper-button>Salvar</paper-button>
@@ -34,7 +36,7 @@
     </template>
     <script>
         Polymer({
-            is: 'grupos-page',
+            is: 'meio-pagamento-page',
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);

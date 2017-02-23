@@ -1,0 +1,77 @@
+
+<dom-module id="produtos-page">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-fab { 
+                position: fixed;
+                right: 30px;
+                bottom: 30px; 
+                background-color: #1ABB9C;
+            }
+            paper-checkbox {
+                vertical-align: bottom;
+            }
+        </style>
+     <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+        <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+            <h2>Cadastro de Produtos</h2>
+            <paper-dialog-scrollable>
+                <div class="row">
+                    <paper-input id="descricao" label="Descrição" class="col-md-8"></paper-input> 
+                    <paper-input id="codigo_barra" label="Código de Barra" class="col-md-4"></paper-input> 
+                </div>
+                <div class="row">      
+                     <paper-input id="grupo_produto" label="Grupo Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="marca_produto" label="Marca Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="codigo_extra" label="Código Extra" class="col-md-4"></paper-input>     
+                </div>           
+                <div class="row">      
+                     <paper-input id="compra_unidade_produto" label="Compra Unidade Produto" class="col-md-4"></paper-input> 
+                     <paper-input id="embalagem_compra" label="Embalagem Compra" class="col-md-4"></paper-input>   
+                     <paper-checkbox id="multiplo" class="col-md-2">Múltiplo</paper-checkbox>             
+                     <paper-input id="conversor_entrada" label="Conversor Entrada" class="col-md-2"></paper-input>    
+                </div>  
+                <div class="row">   
+                    <paper-input id="venda_unidade_produto" label="Venda Unidade Produto" class="col-md-6"></paper-input> 
+                     <paper-input id="embalagem_venda" label="Embalagem Venda" class="col-md-6"></paper-input>
+                </div>     
+                <div class="row">   
+                     <paper-input id="embalagem_venda" label="Embalagem Venda" class="col-md-8"></paper-input>
+                     <paper-checkbox id="utiliza_grade" class="col-md-4">Utiliza Grade</paper-checkbox>
+                </div>     
+            </paper-dialog-scrollable>                       
+            <div class="buttons">
+                <paper-button dialog-dismiss>Fechar</paper-button>
+                <paper-button>Salvar</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'produtos-page',
+            novoCadastro: function() {
+                this.$.cadastro.open();
+                this.setDialog(true);
+            },
+            setDialog: function (open) {
+                if (open) {
+                    var textnode = document.querySelector("body");
+                    textnode.appendChild(this.$.cadastro);
+                } else {
+                    var textnode = document.querySelector("my-topnavigation");
+                    textnode.appendChild(this.$.cadastro);
+                }
+            },
+            menuTap: function() {
+                if(this.$.cadastro.opened) {
+                    this.async(function () {
+                        this.$.cadastro.notifyResize();
+                    });
+                }
+            }
+        });
+    </script>
+</dom-module>    
