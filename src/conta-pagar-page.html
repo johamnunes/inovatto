@@ -17,47 +17,55 @@
         </style>
         <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
             <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-                <h2>Cadastro de Conta a Pagar</h2>
+                <h2>Cadastro de Contas a Pagar</h2>
                 <paper-dialog-scrollable>
                     <div class="row">
                         <paper-input id="fornecedor" label="Fornecedor" class="col-md-12"></paper-input>    
                     </div>
                     <div class="row">
-                        <paper-input id="banco_caixa" label="Banco / Caixa" class="col-md-3"></paper-input>   
-                        <paper-input id="meio_pgto" label="Meio Pagamento" class="col-md-3"></paper-input>  
-                        <paper-input id="origem_titulo" label="Origem Título" class="col-md-3"></paper-input>   
-                        <paper-input id="tipo_titulo" label="Meio Pagamento" class="col-md-3"></paper-input>  
+                        <paper-input id="bancoCaixa" label="Banco / Caixa" class="col-md-3"></paper-input>   
+                        <paper-input id="meioPgto" label="Meio Pagamento" class="col-md-3"></paper-input>  
+                        <paper-input id="origemTitulo" label="Origem Título" class="col-md-3"></paper-input>   
+                        <paper-input id="tipoTitulo" label="Tipo Título" class="col-md-3"></paper-input>  
                     </div>
                     <div class="row">
                         <paper-input id="status" label="Status" class="col-md-3"></paper-input>   
                         <paper-input id="numero" label="Número" class="col-md-3"></paper-input>  
                         <paper-input id="parcela" label="Parcela" class="col-md-3"></paper-input>   
-                        <paper-input id="quantidade_parcela" label="Quantidade parcela" class="col-md-3"></paper-input>  
+                        <paper-input id="quantidadeParcela" label="Quantidade parcela" class="col-md-3"></paper-input>  
                     </div>
                     <div class="row">
-                        <paper-input id="data_lancamento" label="Data Lançamento" class="col-md-3"></paper-input>   
-                        <paper-input id="data_vencimento" label="Data Vencimento" class="col-md-3"></paper-input>  
+                        <paper-input id="dataLancamento" label="Data Lançamento" class="col-md-3"></paper-input>   
+                        <paper-input id="dataVencimento" label="Data Vencimento" class="col-md-3"></paper-input>  
                     </div>
                     <div class="row">
-                        <paper-input id="valor_bruto" label="Valor_Bruto" class="col-md-3"></paper-input>   
-                        <paper-input id="valor_acrescimo" label="Valor Acréscimo" class="col-md-3"></paper-input>  
-                        <paper-input id="valor_desconto" label="Valor Desconto" class="col-md-3"></paper-input>   
-                        <paper-input id="valor_total" label="Valor Total" class="col-md-3"></paper-input>  
+                        <paper-input id="valorBruto" label="Valor_Bruto" class="col-md-3"></paper-input>   
+                        <paper-input id="valorAcrescimo" label="Valor Acréscimo" class="col-md-3"></paper-input>  
+                        <paper-input id="valorDesconto" label="Valor Desconto" class="col-md-3"></paper-input>   
+                        <paper-input id="valorTotal" label="Valor Total" class="col-md-3"></paper-input>  
                     </div>       
                     <div class="row">
-                        <paper-input id="saldo_pagar" label="Saldo Pagar" class="col-md-4"></paper-input>   
+                        <paper-input id="saldoPagar" label="Saldo Pagar" class="col-md-4"></paper-input>   
                         <paper-input id="historico" label="Histórico" class="col-md-8"></paper-input>  
                     </div>    
                 </paper-dialog-scrollable>                       
                 <div class="buttons">
-                    <paper-button dialog-dismiss>Fechar</paper-button>
-                    <paper-button>Salvar</paper-button>
-                </div>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher o Fornecedor."></paper-toast>
+            </div>
             </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'conta-pagar-page',
+            created: function() {
+                var contasPagar;
+                firebase.database().ref().child('contasPagar').on('child_added', function(childSnap) {
+                    contasPagar = childSnap.val();
+                });
+                    console.log(contasPagar);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -76,6 +84,32 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            salvar: function() {
+                var contaPagar = new Object();
+                if(this.$.fornecedor.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    contaPagar.fornecedor = this.$.fornecedor.value;
+                    contaPagar.bancoCaixa = this.$.bancoCaixa.value;
+                    contaPagar.meioPgto = this.$.meioPgto.value;
+                    contaPagar.origemTitulo = this.$.origemTitulo.value;
+                    contaPagar.tipoTitulo = this.$.tipoTitulo.value;
+                    contaPagar.status = this.$.status.value;
+                    contaPagar.numero = this.$.numero.value;
+                    contaPagar.parcela = this.$.parcela.value;
+                    contaPagar.quantidadeParcela = this.$.quantidadeParcela.value;
+                    contaPagar.dataVencimento= this.$.dataVencimento.value;
+                    contaPagar.dataLancamento = this.$.dataLancamento.value;
+                    contaPagar.valorBruto = this.$.valorBruto.value;
+                    contaPagar.valorAcrescimo = this.$.valorAcrescimo.value;
+                    contaPagar.valorDesconto = this.$.valorDesconto.value;
+                    contaPagar.valorTotal = this.$.valorTotal.value;
+                    contaPagar.saldoPagar = this.$.saldoPagar.value;
+                    contaPagar.historico = this.$.historico.value;
+                    console.log(contaPagar);
+                    firebase.database().ref('contasPagar').push(contaPagar);
                 }
             }
         });

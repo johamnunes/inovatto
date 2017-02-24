@@ -1,4 +1,3 @@
-
 <dom-module id="marcas-page">
     <template>
         <style>
@@ -15,7 +14,7 @@
                 vertical-align: bottom;
             }
         </style>
-        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+     <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro de Marcas</h2>
             <paper-dialog-scrollable>
@@ -24,14 +23,22 @@
                 </div>
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
             </div>
         </paper-dialog>
-    </template>
+    </template>   
     <script>
         Polymer({
             is: 'marcas-page',
+            created: function() {
+                var marcas;
+                firebase.database().ref().child('marcas').on('child_added', function(childSnap) {
+                    marcas = childSnap.val();
+                });
+                    console.log(marcas);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -50,6 +57,16 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+             salvar: function() {
+                var marca = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    marca.descricao = this.$.descricao.value;
+                    console.log(marca);
+                    firebase.database().ref('marcas').push(marca);
                 }
             }
         });

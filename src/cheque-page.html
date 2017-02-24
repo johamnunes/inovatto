@@ -20,21 +20,21 @@
                 <h2>Cadastro de Cheque</h2>
                     <paper-dialog-scrollable>
                          <div class="row">
-                            <paper-input id="tipo_cheque" label="Tipo de Cheque" class="col-md-4"></paper-input>  
-                            <paper-input id="origem_cheque" label="Origem Cheque" class="col-md-4"></paper-input>   
-                            <paper-input id="conta_pagar" label="Contas a Pagar" class="col-md-4"></paper-input>  
+                            <paper-input id="tipoCheque" label="Tipo de Cheque" class="col-md-4"></paper-input>  
+                            <paper-input id="origemCheque" label="Origem Cheque" class="col-md-4"></paper-input>   
+                            <paper-input id="contaPagar" label="Contas a Pagar" class="col-md-4"></paper-input>  
                         </div>
                         <div class="row">
-                            <paper-input id="" label="Fornecedor" class="col-md-12"></paper-input>   
+                            <paper-input id="fornecedor" label="Fornecedor" class="col-md-12"></paper-input>   
                         </div>
                         <div class="row">
-                            <paper-input id="terceiro_nome" label="Terceiro Nome" class="col-md-3"></paper-input>  
-                            <paper-input id="terceiro_cpf_cnpj" label="Terceiro CPF / CNPJ" class="col-md-3"></paper-input>   
-                            <paper-input id="terceiro_telefone" label="Terceiro Telefone" class="col-md-3"></paper-input>  
-                            <paper-input id="terceiro_celular" label="Terceiro Celular" class="col-md-3"></paper-input>  
+                            <paper-input id="terceiroNome" label="Terceiro Nome" class="col-md-3"></paper-input>  
+                            <paper-input id="terceiroCpfCnpj" label="Terceiro CPF / CNPJ" class="col-md-3"></paper-input>   
+                            <paper-input id="terceiroTelefone" label="Terceiro Telefone" class="col-md-3"></paper-input>  
+                            <paper-input id="terceiroCelular" label="Terceiro Celular" class="col-md-3"></paper-input>  
                         </div>
                         <div class="row">
-                            <paper-input id="instituicao_financeira" label="Instituição Financeira" class="col-md-6"></paper-input>  
+                            <paper-input id="instituicaoFinanceira" label="Instituição Financeira" class="col-md-6"></paper-input>  
                             <paper-input id="agencia" label="Agência" class="col-md-3"></paper-input>   
                             <paper-input id="conta" label="Conta" class="col-md-3"></paper-input>    
                         </div>
@@ -48,9 +48,9 @@
                             <paper-input id="complemento" label="Complemento" class="col-md-12"></paper-input>  
                         </div>
                          <div class="row">
-                            <paper-input id="data_lancamento" label="Data Lançamento"class="col-md-4"></paper-input>  
-                            <paper-input id="data_vencimento" label="Data Vencimento" class="col-md-4"></paper-input>   
-                            <paper-input id="data_compensado" label="Data Compensado" class="col-md-4"></paper-input>     
+                            <paper-input id="dataLancamento" label="Data Lançamento"class="col-md-4"></paper-input>  
+                            <paper-input id="dataVencimento" label="Data Vencimento" class="col-md-4"></paper-input>   
+                            <paper-input id="dataCompensado" label="Data Compensado" class="col-md-4"></paper-input>     
                         </div>
                         <div class="row">
                             <paper-checkbox id="compesando" class="col-md-6">Compensado</paper-checkbox> 
@@ -58,17 +58,25 @@
                         </div>
                     </paper-dialog-scrollable>                       
                <div class="buttons">
-                 <paper-button dialog-dismiss>Fechar</paper-button>
-                 <paper-button>Salvar</paper-button>
-               </div>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher o Tipo do Cheque."></paper-toast>
+            </div>
             </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'cheque-page',
-               novoCadastro: function() {
-                this.$.cadastro.open();
-                this.setDialog(true);
+            created: function() {
+                var cheques;
+                firebase.database().ref().child('cheques').on('child_added', function(childSnap) {
+                    cheques = childSnap.val();
+                });
+                    console.log(cheques);
+            },
+            novoCadastro: function() {
+            this.$.cadastro.open();
+            this.setDialog(true);
             },
             setDialog: function (open) {
                 if (open) {
@@ -84,6 +92,34 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+             salvar: function() {
+                var cheque = new Object();
+                if(this.$.tipoCheque.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    cheque.tipoCheque = this.$.tipoCheque.value;
+                    cheque.origemCheque = this.$.origemCheque.value;
+                    cheque.contaPagar = this.$.contaPagar.value;
+                    cheque.fornecedor = this.$.fornecedor.value;
+                    cheque.terceiroNome = this.$.terceiroNome.value;
+                    cheque.terceiroCpfCnpj = this.$.terceiroCpfCnpj.value;
+                    cheque.terceiroTelefone = this.$.terceiroTelefone.value;
+                    cheque.terceiroCelular = this.$.terceiroCelular.value;
+                    cheque.instituicaoFinanceira = this.$.instituicaoFinanceira.value;
+                    cheque.agencia = this.$.agencia.value;
+                    cheque.conta = this.$.conta.value;
+                    cheque.serie = this.$.serie.value;
+                    cheque.numero = this.$.numero.value;
+                    cheque.valor = this.$.valor.value;
+                    cheque.historico = this.$.historico.value;
+                    cheque.complemento = this.$.complemento.value;
+                    cheque.dataLancamento = this.$.dataLancamento.value;
+                    cheque.dataVencimento = this.$.dataVencimento.value;
+                    cheque.dataCompensado = this.$.dataCompensado.value;
+                    console.log(cheque);
+                    firebase.database().ref('cheques').push(cheque);
                 }
             }
         });
