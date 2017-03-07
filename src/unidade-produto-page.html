@@ -1,6 +1,6 @@
 <dom-module id="unidade-produto-page">
     <template>
-         <style>
+        <style>
             :host {
                 display: block;
             }
@@ -14,24 +14,32 @@
                 vertical-align: bottom;
             }
         </style>
-        <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
+     <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-            <h2>Cadastro de Unidades</h2>
+            <h2>Cadastro Unidade de Produtos</h2>
             <paper-dialog-scrollable>
                 <div class="row">
-                    <paper-input id="descricao" label="Descrição" class="col-md-8"></paper-input>    
-                    <paper-input id="unidade" label="Unidade" class="col-md-4"></paper-input>
+                    <paper-input id="descricao" label="Descrição" class="col-md-8"></paper-input>   
+                    <paper-input id="unidade" label="Unidade" class="col-md-4"></paper-input> 
                 </div>
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
             </div>
         </paper-dialog>
-    </template>
+    </template>   
     <script>
         Polymer({
             is: 'unidade-produto-page',
+            created: function() {
+                var unidadeProdutos;
+                firebase.database().ref().child('unidadeProdutos').on('child_added', function(childSnap) {
+                    unidadeProdutos = childSnap.val();
+                });
+                    console.log(unidadeProdutos);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -50,6 +58,17 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+             salvar: function() {
+                var unidadeProduto = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    unidadeProduto.descricao = this.$.descricao.value;
+                    unidadeProduto.unidade = this.$.unidade.value;
+                    console.log(unidadeProduto);
+                    firebase.database().ref('unidadeProduto').push(unidadeProduto);
                 }
             }
         });

@@ -24,19 +24,27 @@
                 </div>
                 <div class="row">
                     <paper-checkbox id="antecipado" class="col-md-4">Antecipado</paper-checkbox>  
-                    <paper-checkbox id="entra_quitado" class="col-md-4">Entra Quitado</paper-checkbox>  
-                    <paper-checkbox id="confirma_cheque" class="col-md-4">Confirma Cheque</paper-checkbox>  
+                    <paper-checkbox id="entraQuitado" class="col-md-4">Entra Quitado</paper-checkbox>  
+                    <paper-checkbox id="confirmaCheque" class="col-md-4">Confirma Cheque</paper-checkbox>  
                 </div>
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss>Fechar</paper-button>
-                <paper-button>Salvar</paper-button>
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
             </div>
         </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'meio-pagamento-page',
+            created: function() {
+                var meiosPagamento;
+                firebase.database().ref().child('meiosPagamento').on('child_added', function(childSnap) {
+                    meiosPagamento = childSnap.val();
+                });
+                    console.log(meiosPagamento);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -55,6 +63,19 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            salvar: function() {
+                var meioPagamento = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    meioPagamento.descricao = this.$.descricao.value;
+                    meioPagamento.antecipado = this.$.antecipado.checked;
+                    meioPagamento.entraQuitado = this.$.entraQuitado.checked;
+                    meioPagamento.confirmaCheque = this.$.confirmaCheque.checked;
+                    console.log(meioPagamento);
+                    firebase.database().ref('meiosPagamento').push(meioPagamento);
                 }
             }
         });

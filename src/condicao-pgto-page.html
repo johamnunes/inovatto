@@ -21,22 +21,30 @@
                     <paper-dialog-scrollable>
                         <div class="row">
                             <paper-input id="descricao" label="Descrição" class="col-md-9"></paper-input>  
-                            <paper-input id="quantidade_prestacao" label="Quantidade de Prestação" class="col-md-3"></paper-input>    
+                            <paper-input id="quantidadePrestacao" label="Quantidade de Prestação" class="col-md-3"></paper-input>    
                         </div>
                         <div class="row">
-                            <paper-input id="intervalo_dias" label="Intervalo de Dias" class="col-md-6"></paper-input>   
-                            <paper-input id="percentual_parcela" label="Percentual de Parcela" class="col-md-6"></paper-input>  
+                            <paper-input id="intervaloDias" label="Intervalo de Dias" class="col-md-6"></paper-input>   
+                            <paper-input id="percentualParcela" label="Percentual de Parcela" class="col-md-6"></paper-input>  
                         </div>
                     </paper-dialog-scrollable>                       
-               <div class="buttons">
-                 <paper-button dialog-dismiss>Fechar</paper-button>
-                 <paper-button>Salvar</paper-button>
-               </div>
+              <div class="buttons">
+                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
+            </div>
             </paper-dialog>
     </template>
     <script>
         Polymer({
             is: 'condicao-pgto-page',
+            created: function() {
+                var condicaosPgto;
+                firebase.database().ref().child('condicaosPgto').on('child_added', function(childSnap) {
+                    condicaosPgto = childSnap.val();
+                });
+                    console.log(condicaosPgto);
+            },
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
@@ -55,6 +63,19 @@
                     this.async(function () {
                         this.$.cadastro.notifyResize();
                     });
+                }
+            },
+            salvar: function() {
+                var condicaoPgto = new Object();
+                if(this.$.descricao.value == "") {
+                    this.$.errorToast.open();
+                } else {
+                    condicaoPgto.descricao = this.$.descricao.value;
+                    condicaoPgto.quantidadePrestacao = this.$.quantidadePrestacao.value;
+                    condicaoPgto.intervaloDias = this.$.intervaloDias.value;
+                    condicaoPgto.percentualParcela = this.$.percentualParcela.value;
+                    console.log(condicaoPgto);
+                    firebase.database().ref('condicaosPgto').push(condicaoPgto);
                 }
             }
         });
