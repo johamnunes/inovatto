@@ -12,7 +12,6 @@
     </template>
     <script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>
     <script>
-    // Initialize Firebase
     var config = {
         apiKey: "AIzaSyDlBvtrT_D5gIHMgXNA_CrYXQFpHBmOvUU",
         authDomain: "inovatto-f1d3c.firebaseapp.com",
@@ -22,6 +21,7 @@
     };
     firebase.initializeApp(config);
     var user = new Object();
+    window.history.pushState({}, 'Inovatto', 'login');
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>

@@ -35,6 +35,7 @@
   <template>
     <style>
       :host {
+        --primary-color: #1ABB9C;
         --app-primary-color: #2A3F54;
         --app-secondary-color: white;
 
@@ -195,7 +196,8 @@
 
       _routePageChanged: function(page) {
         if(page == 'index.html') { 
-          page = 'clientes';
+          page = 'dashboard';
+          window.history.pushState({}, 'Inovatto', 'dashboard');
         }
         this.page = page || 'clientes';
 

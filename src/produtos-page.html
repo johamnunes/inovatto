@@ -11,7 +11,9 @@
                 background-color: #1ABB9C;
             }
             paper-checkbox {
-                vertical-align: bottom;
+                --paper-checkbox-vertical-align: bottom;
+                --paper-checkbox-label-align: bottom;
+                --paper-checkbox-line-heigth: 50px;
             }
         </style>
      <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
@@ -30,7 +32,7 @@
                 <div class="row">      
                      <paper-input id="compraUnidadeProduto" label="Compra Unidade Produto" class="col-md-4"></paper-input> 
                      <paper-input id="embalagemCompra" label="Embalagem Compra" class="col-md-4"></paper-input>   
-                     <paper-checkbox id="multiplo" class="col-md-2">Múltiplo</paper-checkbox>             
+                     <paper-checkbox id="multiplo" class="col-md-2">Múltiplo</paper-checkbox> 
                      <paper-input id="conversorEntrada" label="Conversor Entrada" class="col-md-2"></paper-input>    
                 </div>  
                 <div class="row">   

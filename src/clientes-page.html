@@ -5,33 +5,37 @@
             :host {
                 display: block;
             }
+            .card {
+                display: flex;
+                justify-content: center;
+                margin: 10px;
+            }
+            #errorToast {
+                
+            }
+
             paper-fab { 
                 position: fixed;
                 right: 30px;
                 bottom: 30px; 
                 background-color: #1ABB9C;
             }
-            .card {
-                display: flex;
-                justify-content: center;
-                margin: 10px;
-            }
         </style>
         <div class="card">
             <paper-card heading="Clientes" elevation="1" animated-shadow="false">
                 <div class="card-content">
-                    <paper-datatable data={{clientes}}>
-                        <paper-datatable-column header="Nome / Razão Social" property="nomeRazaoSocial" sortable>
+                    <paper-datatable data={{clientes}} selectable multi-selection>
+                        <paper-datatable-column header="Nome / Razão Social" property="nomeRazaoSocial" sortable style="width: 400px;">
                             <template>
                                 <p>{{item.nomeRazaoSocial}}</p>
                             </template>
                         </paper-datatable-column>
-                        <paper-datatable-column header="CPF / CNPJ" property="cpfCnpj" sortable>
+                        <paper-datatable-column header="CPF / CNPJ" property="cpfCnpj">
                             <template>
                                 <p>{{item.cpfCnpj}}</p>
                             </template>
                         </paper-datatable-column>
-                        <paper-datatable-column header="Telefone" property="telefone" sortable>
+                        <paper-datatable-column header="Telefone" property="telefone">
                             <template>
                                 <p>{{item.telefone}}</p>
                             </template>
@@ -53,13 +57,9 @@
                 </div>
             </paper-card>
         </div>
-        
-        
-        
-
         <paper-fab id="addCliente" icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-tooltip for="addCliente" position="left">Adicionar cliente</paper-tooltip>
-        <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+        <paper-dialog id="cadastro" entry-animation="slide-from-right-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro de cliente</h2>
             <paper-dialog-scrollable>
                 <div class="row">
@@ -137,9 +137,12 @@
                 </paper-menu>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
-                <paper-button on-tap="salvar">Salvar</paper-button>
-                <paper-toast id="errorToast" text="Você precisa preencher o Nome ou a Razão Social."></paper-toast>
+                <paper-button style="color: #d9534f; width: 100px;" dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button style="background-color: #1ABB9C; color: white; width: 100px;" raised on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" style="background-color: #d9534f; color: white;">
+                    <iron-icon icon="report"></iron-icon>
+                    Você precisa selecionar a <strong>Natureza Jurídica</strong> e preencher o <strong>Nome</strong> ou a <strong>Razão Social</strong>.
+                </paper-toast>
             </div>
         </paper-dialog>
         
@@ -159,9 +162,10 @@
                 firebase.database().ref().child('clientes').on('value', snap => {
                     snap.forEach(function(childSnap) {
                         itens.push({
-                            nomeRazaoSocial: childSnap.child('nomeRazaoSocial').val(),
-                            cpfCnpj: childSnap.child('cpfCnpj').val(),
-                            telefone: childSnap.child('telefone').val()
+                            nomeRazaoSocial: childSnap.val().nomeRazaoSocial,
+                            cpfCnpj: childSnap.val().cpfCnpj,
+                            telefone: childSnap.val().telefone,
+                            _key: childSnap.key
                             });
                     });
                     console.log(itens);
