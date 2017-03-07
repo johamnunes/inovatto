@@ -13,7 +13,37 @@
             paper-checkbox {
                 vertical-align: bottom;
             }
+            .card {
+                display: flex;
+                justify-content: center;
+                margin: 10px;
+            }         
         </style>
+         <div class="card">
+            <paper-card heading="Marcas" elevation="1" animated-shadow="false">
+                <div class="card-content">
+                    <paper-datatable data={{marcas}} selectable multi-selection>
+                        <paper-datatable-column header="Descrição" property="descricao" sortable style="width: 400px;">
+                            <template>
+                                <p>{{item.descricao}}</p>
+                            </template>
+                        </paper-datatable-column>
+                        <paper-datatable-column header="Ações" property="descricao">
+                            <template>
+                                <paper-icon-button id="edit" icon="create"></paper-icon-button>
+                                <paper-icon-button id="delete" icon="delete"></paper-icon-button>
+                                <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
+                                <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
+                            </template>
+                        </paper-datatable-column>
+                    </paper-datatable>
+                </div>
+                <div class="card-actions">
+                    <paper-icon-button icon="file-download"></paper-icon-button>
+                    <paper-icon-button icon="print"></paper-icon-button>                   
+                </div>
+            </paper-card>
+        </div>
      <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
         <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro de Marcas</h2>
