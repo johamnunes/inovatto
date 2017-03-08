@@ -70,12 +70,20 @@
     <script>
         Polymer({
             is: 'grupos-page',
-            created: function() {
-                var grupos;
-                firebase.database().ref().child('grupos').on('child_added', function(childSnap) {
-                    grupos = childSnap.val();
+             created: function() {
+                var itens = [];
+                firebase.database().ref().child('grupos').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            tipoGrupo : childSnap.val().tipoGrupo,
+                            descricao: childSnap.val().descricao,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.grupos = itens;
+                    itens = [];
                 });
-                    console.log(grupos);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

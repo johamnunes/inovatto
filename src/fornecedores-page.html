@@ -150,12 +150,21 @@
                     notify: true
                 }
             },
-            created: function() {
-                var fornecedores;
-                firebase.database().ref().child('clientes').on('child_added', function(childSnap) {
-                    fornecedores = childSnap.val();
+             created: function() {
+                var itens = [];
+                firebase.database().ref().child('fornecedores').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            nomeRazaoSocial: childSnap.val().nomeRazaoSocial,
+                            cpfCnpj: childSnap.val().cpfCnpj,
+                            telefone: childSnap.val().telefone,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.fornecedores = itens;
+                    itens = [];
                 });
-                    console.log(fornecedores);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

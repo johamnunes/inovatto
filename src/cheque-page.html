@@ -23,7 +23,7 @@
         <div class="card">
             <paper-card heading="Cheque" elevation="1" animated-shadow="false">
                 <div class="card-content">
-                    <paper-datatable data={{cheque}} selectable multi-selection>
+                    <paper-datatable data={{cheques}} selectable multi-selection>
                         <paper-datatable-column header="Fornecedor" property="fornecedor" sortable style="width: 400px;">
                             <template>
                                 <p>{{item.fornecedor}}</p>
@@ -113,11 +113,21 @@
         Polymer({
             is: 'cheque-page',
             created: function() {
-                var cheques;
-                firebase.database().ref().child('cheques').on('child_added', function(childSnap) {
-                    cheques = childSnap.val();
+                var itens = [];
+                firebase.database().ref().child('cheques').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            fornecedor: childSnap.val().fornecedor,
+                            valor: childSnap.val().valor,
+                            dataLancamento: childSnap.val().dataLancamento,
+                            compesando: childSnap.val().compensado,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.cheques = itens;
+                    itens = [];
                 });
-                    console.log(cheques);
             },
             novoCadastro: function() {
             this.$.cadastro.open();

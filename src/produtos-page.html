@@ -94,12 +94,21 @@
     <script>
         Polymer({
             is: 'produtos-page',
-            created: function() {
-                var produtos;
-                firebase.database().ref().child('produtos').on('child_added', function(childSnap) {
-                    produtos = childSnap.val();
+              created: function() {
+                var itens = [];
+                firebase.database().ref().child('produtos').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            descricao: childSnap.val().descricao,
+                            grupoProduto: childSnap.val().grupoProduto,
+                            vendaUnidadeProduto : childSnap.val().vendaUnidadeProduto,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.produtos = itens;
+                    itens = [];
                 });
-                    console.log(produtos);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

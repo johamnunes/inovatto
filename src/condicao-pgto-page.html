@@ -29,7 +29,7 @@
                                 <p>{{item.descricao}}</p>
                             </template>
                         </paper-datatable-column>
-                        <paper-datatable-column header="Ações" property="tipoGrupo">
+                        <paper-datatable-column header="Ações" property="descricao">
                             <template>
                                 <paper-icon-button id="edit" icon="create"></paper-icon-button>
                                 <paper-icon-button id="delete" icon="delete"></paper-icon-button>
@@ -69,11 +69,18 @@
         Polymer({
             is: 'condicao-pgto-page',
             created: function() {
-                var condicaosPgto;
-                firebase.database().ref().child('condicaosPgto').on('child_added', function(childSnap) {
-                    condicaosPgto = childSnap.val();
+                var itens = [];
+                firebase.database().ref().child('condicaoPgto').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            descricao: childSnap.val().descricao,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.condicaoPgto = itens;
+                    itens = [];
                 });
-                    console.log(condicaosPgto);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();
@@ -105,7 +112,7 @@
                     condicaoPgto.intervaloDias = this.$.intervaloDias.value;
                     condicaoPgto.percentualParcela = this.$.percentualParcela.value;
                     console.log(condicaoPgto);
-                    firebase.database().ref('condicaosPgto').push(condicaoPgto);
+                    firebase.database().ref('condicaoPgto').push(condicaoPgto);
                 }
             }
         });

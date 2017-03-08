@@ -23,7 +23,7 @@
          <div class="card">
             <paper-card heading="Grupo de Produtos" elevation="1" animated-shadow="false">
                 <div class="card-content">
-                    <paper-datatable data={{grupoProdutos}} selectable multi-selection>
+                    <paper-datatable data={{gruposProdutos}} selectable multi-selection>
                         <paper-datatable-column header="Descrição" property="descricao" sortable style="width: 400px;">
                             <template>
                                 <p>{{item.descricao}}</p>
@@ -63,12 +63,19 @@
     <script>
         Polymer({
             is: 'grupos-produtos-page',
-            created: function() {
-                var gruposProdutos;
-                firebase.database().ref().child('gruposProdutos').on('child_added', function(childSnap) {
-                    gruposProdutos = childSnap.val();
+               created: function() {
+                var itens = [];
+                firebase.database().ref().child('gruposProdutos').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            descricao : childSnap.val().descricao,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.gruposProdutos = itens;
+                    itens = [];
                 });
-                    console.log(gruposProdutos);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

@@ -20,9 +20,9 @@
             }
         </style>
         <div class="card">
-            <paper-card heading="Marcas" elevation="1" animated-shadow="false">
+            <paper-card heading="Unidade de Produto" elevation="1" animated-shadow="false">
                 <div class="card-content">
-                    <paper-datatable data={{marcas}} selectable multi-selection>
+                    <paper-datatable data={{unidadeProduto}} selectable multi-selection>
                         <paper-datatable-column header="Descrição" property="descricao" sortable style="width: 400px;">
                             <template>
                                 <p>{{item.descricao}}</p>
@@ -69,11 +69,19 @@
         Polymer({
             is: 'unidade-produto-page',
             created: function() {
-                var unidadeProdutos;
-                firebase.database().ref().child('unidadeProdutos').on('child_added', function(childSnap) {
-                    unidadeProdutos = childSnap.val();
+                var itens = [];
+                firebase.database().ref().child('unidadeProduto').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            descricao : childSnap.val().descricao,
+                            unidade : childSnap.val().unidade,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.unidadeProduto = itens;
+                    itens = [];
                 });
-                    console.log(unidadeProdutos);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

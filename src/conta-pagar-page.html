@@ -84,7 +84,7 @@
                         <paper-input id="dataVencimento" label="Data Vencimento" class="col-md-3"></paper-input>  
                     </div>
                     <div class="row">
-                        <paper-input id="valorBruto" label="Valor_Bruto" class="col-md-3"></paper-input>   
+                        <paper-input id="valorBruto" label="Valor Bruto" class="col-md-3"></paper-input>   
                         <paper-input id="valorAcrescimo" label="Valor Acréscimo" class="col-md-3"></paper-input>  
                         <paper-input id="valorDesconto" label="Valor Desconto" class="col-md-3"></paper-input>   
                         <paper-input id="valorTotal" label="Valor Total" class="col-md-3"></paper-input>  
@@ -105,11 +105,21 @@
         Polymer({
             is: 'conta-pagar-page',
             created: function() {
-                var contasPagar;
-                firebase.database().ref().child('contasPagar').on('child_added', function(childSnap) {
-                    contasPagar = childSnap.val();
+                var itens = [];
+                firebase.database().ref().child('contasPagar').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            fornecedor : childSnap.val().fornecedor,
+                            dataLancamento : childSnap.val().dataLancamento,
+                            valorTotal : childSnap.val().valorTotal,
+                            saldoPagar : childSnap.val().saldoPagar,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.contasPagar = itens;
+                    itens = [];
                 });
-                    console.log(contasPagar);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();

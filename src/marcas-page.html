@@ -62,12 +62,19 @@
     <script>
         Polymer({
             is: 'marcas-page',
-            created: function() {
-                var marcas;
-                firebase.database().ref().child('marcas').on('child_added', function(childSnap) {
-                    marcas = childSnap.val();
+                created: function() {
+                var itens = [];
+                firebase.database().ref().child('marcas').on('value', snap => {
+                    snap.forEach(function(childSnap) {
+                        itens.push({
+                            descricao: childSnap.val().descricao,
+                            _key: childSnap.key
+                            });
+                    });
+                    console.log(itens);
+                    this.marcas = itens;
+                    itens = [];
                 });
-                    console.log(marcas);
             },
             novoCadastro: function() {
                 this.$.cadastro.open();
