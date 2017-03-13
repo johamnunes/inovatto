@@ -21,7 +21,7 @@
         <div class="card">
             <paper-card heading="Fornecedor" elevation="1" animated-shadow="false">
                 <div class="card-content">
-                    <paper-datatable data={{fornecedores}} selectable multi-selection>
+                    <paper-datatable data={{fornecedores}} selectable>
                         <paper-datatable-column header="Nome / Razão Social" property="nomeRazaoSocial" sortable style="width: 400px;">
                             <template>
                                 <p>{{item.nomeRazaoSocial}}</p>
@@ -39,7 +39,7 @@
                         </paper-datatable-column>
                         <paper-datatable-column header="Ações" property="nomeRazaoSocial">
                             <template>
-                                <paper-icon-button id="edit" icon="create"></paper-icon-button>
+                                <paper-icon-button id="{{item._key}}" icon="create" on-tap="editar"></paper-icon-button>
                                 <paper-icon-button id="delete" icon="delete"></paper-icon-button>
                                 <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
                                 <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
@@ -148,9 +148,14 @@
                     type: String,
                     observer: "_selected",
                     notify: true
-                }
+                },
+                currentElement: Object,
+                editMode: Boolean,
+                natJuridica: Number
             },
-             created: function() {
+            created: function() {
+                editMode = false;
+                currentElement = null;
                 var itens = [];
                 firebase.database().ref().child('fornecedores').on('value', snap => {
                     snap.forEach(function(childSnap) {
@@ -159,9 +164,8 @@
                             cpfCnpj: childSnap.val().cpfCnpj,
                             telefone: childSnap.val().telefone,
                             _key: childSnap.key
-                            });
+                        });
                     });
-                    console.log(itens);
                     this.fornecedores = itens;
                     itens = [];
                 });
@@ -169,6 +173,8 @@
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
+                this.reset();
+                editMode = false;
             },
             setDialog: function (open) {
                 if (open) {
@@ -195,6 +201,7 @@
                         this.$.dataNascFund.label = "Data de Nascimento";
                         this.$.inscEstadual.disabled = true;
                         this.$.identidadeRg.disabled = false;
+                        natJuridica = 0;
                         break;
                     case 1:
                         this.$.nomeRazaoSocial.label = "Razão Social";
@@ -203,8 +210,71 @@
                         this.$.dataNascFund.label = "Data de Fundação";
                         this.$.inscEstadual.disabled = false;
                         this.$.identidadeRg.disabled = true;
+                        natJuridica = 1;
                         break;
+                    default:
+                        natJuridica = 0;
+                        break;
+
                 }
+            },
+            reset: function() {
+                this.$.nomeRazaoSocial.value = "";
+                this.$.CPFCnpj.value = "";
+                this.$.identidadeRg.value = "";
+                this.$.fantasia.value = "";
+                this.$.inscEstadual.value = "";
+                this.$.dataNascFund.value = "";
+                this.$.naturezaJuridica.value = "";
+                this.$.telefone.value = "";
+                this.$.celular.value = "";
+                this.$.email.value = "";
+                this.$.adicional.value = "";
+                this.$.cep.value = "";
+                this.$.logradouro.value = "";
+                this.$.numero.value = "";
+                this.$.complemento.value = "";
+                this.$.bairro.value = "";
+                this.$.cidadeUf.value = "";
+                this.$.nomeContato.value = "";
+                this.$.emailContato.value = "";
+                this.$.telefoneContato.value = "";
+            },
+            cancelar: function() {
+                this.reset();
+                editMode = false;
+            },
+            editar: function(e) {
+                var target = e.currentTarget;
+                var id = target.id;
+                var fornecedorData = firebase.database().ref("fornecedores/" + id);
+                fornecedorData.on('value', function(snap){
+                    editMode = true;
+                    currentElement = snap.val();
+                    currentElement._key = snap.key;
+                });
+                this.$.cadastro.open();
+                this.setDialog(true);
+                this.$.nomeRazaoSocial.value = currentElement.nomeRazaoSocial;
+                this.$.CPFCnpj.value = currentElement.cpfCnpj;
+                this.$.identidadeRg.value = currentElement.rg;
+                this.$.fantasia.value = currentElement.fantasia;
+                this.$.inscEstadual.value = currentElement.inscEstadual;
+                this.$.dataNascFund.value = currentElement.dataNascFund;
+                this.$.naturezaJuridica.selectedItem = currentElement.naturezaJuridica;
+                this.$.telefone.value = currentElement.telefone;
+                this.$.celular.value = currentElement.celular;
+                this.$.email.value = currentElement.email;
+                this.$.adicional.value = currentElement.adicional;
+                this.$.cep.value = currentElement.cep;
+                this.$.logradouro.value = currentElement.logradouro;
+                this.$.numero.value = currentElement.numero;
+                this.$.complemento.value = currentElement.complemento;
+                this.$.bairro.value = currentElement.bairro;
+                this.$.cidadeUf.value = currentElement.cidade;
+                this.$.nomeContato.value = currentElement.nomeContato;
+                this.$.emailContato.value = currentElement.emailContato;
+                this.$.telefoneContato.value = currentElement.telefoneContato;
             },
             salvar: function() {
                 var fornecedor = new Object();
@@ -217,7 +287,7 @@
                     fornecedor.fantasia = this.$.fantasia.value;
                     fornecedor.inscEstadual = this.$.inscEstadual.value;
                     fornecedor.dataNascFund = this.$.dataNascFund.value;
-                    fornecedor.naturezaJuridica = this.$.naturezaJuridica.value;
+                    fornecedor.naturezaJuridica = natJuridica;
                     fornecedor.telefone = this.$.telefone.value;
                     fornecedor.celular = this.$.celular.value;
                     fornecedor.email = this.$.email.value;
@@ -231,8 +301,15 @@
                     fornecedor.nomeContato = this.$.nomeContato.value;
                     fornecedor.emailContato = this.$.emailContato.value;
                     fornecedor.telefoneContato = this.$.telefoneContato.value;
-                    console.log(fornecedor);
-                    firebase.database().ref('fornecedores').push(fornecedor);
+                    if(editMode == false) {
+                        firebase.database().ref('fornecedores').push(fornecedor);
+                    } else {
+                        var updates = {};
+                        updates['/fornecedores/' + currentElement._key] = fornecedor
+                        firebase.database().ref().update(updates);
+                    }
+                    editMode = false;
+                    this.$.cadastro.close();
                 }
             }
         });
