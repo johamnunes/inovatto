@@ -43,7 +43,7 @@
                         <paper-datatable-column header="Ações" property="nomeRazaoSocial">
                             <template>
                                 <paper-icon-button id="edit" icon="create"></paper-icon-button>
-                                <paper-icon-button id="delete" icon="delete"></paper-icon-button>
+                                <paper-icon-button id="{{item._key}}" icon="delete" on-tap="remover"></paper-icon-button>
                                 <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
                                 <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
                             </template>
@@ -242,6 +242,12 @@
                     firebase.database().ref('clientes').push(cliente);
                     this.$.cadastro.close();
                 }
+            },
+            remover: function(e) {
+                var target = e.currentTarget;
+                var id = target.id;
+                console.log(id);
+                firebase.database().ref("clientes/" + id).remove();
             }
         });
     </script>
