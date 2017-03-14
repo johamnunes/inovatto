@@ -42,7 +42,7 @@
                         </paper-datatable-column>
                         <paper-datatable-column header="Ações" property="nomeRazaoSocial">
                             <template>
-                                <paper-icon-button id="edit" icon="create"></paper-icon-button>
+                                <paper-icon-button id="{{item._key}}" icon="create" on-tap="editar"></paper-icon-button>
                                 <paper-icon-button id="{{item._key}}" icon="delete" on-tap="remover"></paper-icon-button>
                                 <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
                                 <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
@@ -155,9 +155,14 @@
                     type: String,
                     observer: "_selected",
                     notify: true
-                }
+                },
+                currentElement: Object,
+                editMode: Boolean,
+                natJuridica: Number
             },
             created: function() {
+                editMode = false;
+                currentElement = null;
                 var itens = [];
                 firebase.database().ref().child('clientes').on('value', snap => {
                     snap.forEach(function(childSnap) {
@@ -176,6 +181,7 @@
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
+                this.reset();
             },
             setDialog: function (open) {
                 if (open) {
@@ -202,6 +208,7 @@
                         this.$.dataNascFund.label = "Data de Nascimento";
                         this.$.inscEstadual.disabled = true;
                         this.$.identidadeRg.disabled = false;
+                        natJuridica = 0;
                         break;
                     case 1:
                         this.$.nomeRazaoSocial.label = "Razão Social";
@@ -210,8 +217,70 @@
                         this.$.dataNascFund.label = "Data de Fundação";
                         this.$.inscEstadual.disabled = false;
                         this.$.identidadeRg.disabled = true;
+                        natJuridica = 1;
+                        break;
+                    default:
+                        natJuridica = 0;
                         break;
                 }
+            },
+            reset: function() {
+                this.$.nomeRazaoSocial.value = "";
+                this.$.CPFCnpj.value = "";
+                this.$.identidadeRg.value = "";
+                this.$.fantasia.value = "";
+                this.$.inscEstadual.value = "";
+                this.$.dataNascFund.value = "";
+                this.$.naturezaJuridica.value = "";
+                this.$.telefone.value = "";
+                this.$.celular.value = "";
+                this.$.email.value = "";
+                this.$.adicional.value = "";
+                this.$.cep.value = "";
+                this.$.logradouro.value = "";
+                this.$.numero.value = "";
+                this.$.complemento.value = "";
+                this.$.bairro.value = "";
+                this.$.cidadeUf.value = "";
+                this.$.nomeContato.value = "";
+                this.$.emailContato.value = "";
+                this.$.telefoneContato.value = "";
+            },
+            cancelar: function() {
+                this.reset();
+                editMode = false;
+            },
+            editar: function(e) {
+                var target = e.currentTarget;
+                var id = target.id;
+                var clienteData = firebase.database().ref("clientes/" + id);
+                clienteData.on('value', function(snap){
+                    editMode = true;
+                    currentElement = snap.val();
+                    currentElement._key = snap.key;
+                });
+                this.$.cadastro.open();
+                this.setDialog(true);
+                this.$.nomeRazaoSocial.value = currentElement.nomeRazaoSocial;
+                this.$.CPFCnpj.value = currentElement.cpfCnpj;
+                this.$.identidadeRg.value = currentElement.rg;
+                this.$.fantasia.value = currentElement.fantasia;
+                this.$.inscEstadual.value = currentElement.inscEstadual;
+                this.$.dataNascFund.value = currentElement.dataNascFund;
+                this.$.naturezaJuridica.selectedItem = currentElement.naturezaJuridica;
+                this.$.telefone.value = currentElement.telefone;
+                this.$.celular.value = currentElement.celular;
+                this.$.email.value = currentElement.email;
+                this.$.adicional.value = currentElement.adicional;
+                this.$.cep.value = currentElement.cep;
+                this.$.logradouro.value = currentElement.logradouro;
+                this.$.numero.value = currentElement.numero;
+                this.$.complemento.value = currentElement.complemento;
+                this.$.bairro.value = currentElement.bairro;
+                this.$.cidadeUf.value = currentElement.cidade;
+                this.$.nomeContato.value = currentElement.nomeContato;
+                this.$.emailContato.value = currentElement.emailContato;
+                this.$.telefoneContato.value = currentElement.telefoneContato;
             },
             salvar: function() {
                 var cliente = new Object();
@@ -238,8 +307,14 @@
                     cliente.nomeContato = this.$.nomeContato.value;
                     cliente.emailContato = this.$.emailContato.value;
                     cliente.telefoneContato = this.$.telefoneContato.value;
-                    console.log(cliente);
-                    firebase.database().ref('clientes').push(cliente);
+                    if(editMode == false) {
+                        firebase.database().ref('clientes').push(cliente);
+                    } else {
+                        var updates = {};
+                        updates['/clientes/' + currentElement._key] = cliente
+                        firebase.database().ref().update(updates);
+                    }
+                    editMode = false;
                     this.$.cadastro.close();
                 }
             },

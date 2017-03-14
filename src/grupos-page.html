@@ -32,7 +32,7 @@
                         </paper-datatable-column>
                         <paper-datatable-column header="Ações" property="tipoGrupo">
                             <template>
-                                <paper-icon-button id="edit" icon="create"></paper-icon-button>
+                                <paper-icon-button id="{{item._key}}" icon="create" on-tap="editar"></paper-icon-button>
                                 <paper-icon-button id="{{item._key}}" icon="delete" on-tap="remover"></paper-icon-button>
                                 <paper-tooltip for="edit" position="bottom">Editar</paper-tooltip>
                                 <paper-tooltip for="delete" position="bottom">Apagar</paper-tooltip>
@@ -52,7 +52,7 @@
             <paper-dialog-scrollable>
                 <div class="row">
                     <paper-dropdown-menu id="tipoGrupo" label="Tipo de Grupo" class="col-md-4">
-                        <paper-listbox class="dropdown-content">
+                        <paper-listbox class="dropdown-content" selected="{{selected}}">
                             <paper-item value="0">Cliente</paper-item>
                             <paper-item value="1">Fornecedor</paper-item>
                         </paper-listbox>
@@ -70,12 +70,24 @@
     <script>
         Polymer({
             is: 'grupos-page',
+            properties: {
+                selected: {
+                    type: String,
+                    observer: "_selected",
+                    notify: true
+                },
+                currentElement: Object,
+                editMode: Boolean,
+                tipoGrupo: Number
+            },
              created: function() {
+                editMode = false;
+                currentElement = null;
                 var itens = [];
                 firebase.database().ref().child('grupos').on('value', snap => {
                     snap.forEach(function(childSnap) {
                         itens.push({
-                            tipoGrupo : childSnap.val().tipoGrupo,
+                            tipoGrupo : childSnap.val().tipoGrupoText,
                             descricao: childSnap.val().descricao,
                             _key: childSnap.key
                             });
@@ -88,6 +100,7 @@
             novoCadastro: function() {
                 this.$.cadastro.open();
                 this.setDialog(true);
+                this.reset();
             },
             setDialog: function (open) {
                 if (open) {
@@ -105,15 +118,58 @@
                     });
                 }
             },
+            _selected: function(selected) {
+                switch(selected) {
+                    case 0:
+                        tipoGrupo = 0;
+                        break;
+                    case 1:
+                        tipoGrupo = 1;
+                        break;
+                    default:
+                        tipoGrupo = 0;
+                        break;    
+                 }
+            },
+            reset: function() {
+                this.$.tipoGrupo.selectedItem = -1;
+                this.$.descricao.value="";
+            },
+             cancelar: function() {
+                this.reset();
+                editMode = false;
+             },
+              editar: function(e) {
+                var target = e.currentTarget;
+                var id = target.id;
+                var grupoData = firebase.database().ref("grupos/" + id);
+                grupoData.on('value', function(snap){
+                    editMode = true;
+                    currentElement = snap.val();
+                    currentElement._key = snap.key;
+                });
+                this.$.cadastro.open();
+                this.setDialog(true);
+                this.$.tipogrupo.selectedItem = currentElement.tipoGrupo;
+                this.$.descricao.value = currentElement.descricao;
+              }, 
             salvar: function() {
                 var grupo = new Object();
                 if(this.$.descricao.value == "" || this.$.tipoGrupo.value == "") {
                     this.$.errorToast.open();
                 } else {
-                    grupo.tipoGrupo = this.$.tipoGrupo.value;
+                    grupo.tipoGrupo = tipoGrupo;
                     grupo.descricao = this.$.descricao.value;
-                    console.log(grupo);
-                    firebase.database().ref('grupos').push(grupo);
+                    grupo.tipoGrupoText = this.$.tipoGrupo.value;
+                    if(editMode == false) {
+                        firebase.database().ref('grupos').push(grupo);
+                    } else {
+                        var updates = {};
+                        updates['/grupos/' + currentElement._key] = grupo
+                        firebase.database().ref().update(updates);
+                    }
+                    editMode = false;
+                    this.$.cadastro.close();
                 }
             },
             remover: function(e) {
