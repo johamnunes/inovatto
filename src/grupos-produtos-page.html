@@ -46,7 +46,7 @@
             </paper-card>
         </div>
      <paper-fab icon="add" on-tap="novoCadastro"></paper-fab>
-        <paper-dialog id="cadastro" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+        <paper-dialog id="cadastro" entry-animation="slide-from-right-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>Cadastro Grupo de Produto</h2>
             <paper-dialog-scrollable>
                 <div class="row">
@@ -54,10 +54,13 @@
                 </div>
             </paper-dialog-scrollable>                       
             <div class="buttons">
-                <paper-button dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
-                <paper-button on-tap="salvar">Salvar</paper-button>
-                <paper-toast id="errorToast" text="Você precisa preencher a Descrição."></paper-toast>
-            </div>
+                <paper-button style="color: #d9534f; width: 100px;" dialog-dismiss on-tap="cancelar">Cancelar</paper-button>
+                <paper-button style="background-color: #1ABB9C; color: white; width: 100px;" raised on-tap="salvar">Salvar</paper-button>
+                <paper-toast id="errorToast" style="background-color: #d9534f; color: white;">
+                    <iron-icon icon="report"></iron-icon>
+                    Você precisa preencher a <strong>Descrição</strong>.
+                </paper-toast>
+            </div>   
         </paper-dialog>
     </template>   
     <script>
